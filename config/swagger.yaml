@@ -21,10 +21,23 @@ securityDefinitions:
     type: apiKey
     in: header
     name: value
+  tags:
+    - name: "general"
+      description: "Everything about your Pets"
+      externalDocs:
+        description: "Find out more"
+        url: "http://swagger.io"
+    - name: "users"
+      description: "Operations about user"
+      externalDocs:
+        description: "Find out more about our store"
+        url: "http://swagger.io"
 paths:
   /status:
     get:
-      description: Returns the status of the OMNI RESTful API
+      tags:
+        - general
+      description: Returns the status of the **OMNI RESTful API**
       x-silex:
         defaults:
           _controller: 'Tom\ApiController::initAction'
@@ -50,6 +63,8 @@ paths:
               $ref: '#/definitions/Status'
   /example:
     get:
+      tags:
+        - general
       description: Returns the 20 most recent mentions for the authenticating user
       security:
         - key: []
