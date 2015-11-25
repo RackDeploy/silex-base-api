@@ -112,8 +112,8 @@ definitions:
     type: object
     properties:
       success:
-        type: string
-        description: Contains the value "OK"
+        type: boolean
+        description: true or false
   Example:
     type: object
     properties:
