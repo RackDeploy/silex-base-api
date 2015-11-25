@@ -17,7 +17,10 @@ use bandwidthThrottle\tokenBucket\storage\FileStorage;
 
 //Request::setTrustedProxies(array('127.0.0.1'));
 
-$app->get('0.0', function () use ($app) {
+//////
+// Testing routes
+//////
+$app->get('/', function () use ($app) {
     return $app['twig']->render('index.html', array());
 })
 ->bind('homepage')
