@@ -2,8 +2,9 @@ swagger: '2.0'
 info:
   version: '1.0'
   title: DialogTech OMNI RESTful API
-host: omniapi.dialogtech.com
-basePath: /1.0
+#host: 192.168.169.13
+#host: omniapi.dialogtech.com
+#basePath: /1.0
 schemes:
   - http
   - https
