@@ -10,6 +10,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Config\FileLocator;
 use Overrides\SwaggerYamlFileLoader;
 
+// Required for rate limiting
+use bandwidthThrottle\tokenBucket\Rate;
+use bandwidthThrottle\tokenBucket\TokenBucket;
+use bandwidthThrottle\tokenBucket\storage\FileStorage;
+
 //Request::setTrustedProxies(array('127.0.0.1'));
 
 $app->get('0.0', function () use ($app) {
@@ -22,6 +27,31 @@ $app->get('0.0/test/', function () use ($app) {
     $test = array('abcd' => '1234');
     return $app['twig']->render('api.json', array('test' => $test));
 });
+
+// Apply ratelimiting
+// FileStorage is the type of token storage, see here:
+// http://bandwidth-throttle.github.io/token-bucket/api/namespace-bandwidthThrottle.tokenBucket.storage.html
+// Rate is set with Rate(number_of_requests, in_this_time_period)
+// TokenBucket is set with TokenBucket(total_tokens_allowed_in_the_bucket, rate, storage)
+// Bootstrap should be ran just once when deploying to pregen tokens, this needs to be moved out.
+$app->before(function (Request $request, Silex\Application $app) {
+    // TODO::change this to redis or Memcached
+    $storage = new FileStorage(__DIR__ . "/../var/api.bucket");
+    $rate    = new Rate(20, Rate::MINUTE);
+    $bucket  = new TokenBucket(10, $rate, $storage);
+    // TODO::move this to deploy process
+    $bucket->bootstrap(10);
+
+    if (!$bucket->consume(1, $seconds)) {
+        $data = array(
+            'message' => 'Too many requests, try again in ' . ceil($seconds) . ' seconds.',
+            'success' => false
+        );
+        $response = new JsonResponse($data, 429);
+        $response->headers->set('Retry-After', ceil($seconds));
+        return $response;
+    }
+}, Silex\Application::EARLY_EVENT);
 
 // Build routes from swagger.yaml
 $app['routes'] = $app->share($app->extend('routes', function ($routes, $app) {

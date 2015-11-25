@@ -21,7 +21,8 @@
         "symfony/translation": "~2.3",
         "symfony/twig-bridge": "~2.3",
         "symfony/validator": "~2.3",
-        "symfony/yaml": "~2.3"
+        "symfony/yaml": "~2.3",
+        "bandwidth-throttle/token-bucket": "0.4.*"
     },
     "require-dev": {
         "symfony/var-dumper" : "dev-master"
