@@ -28,6 +28,14 @@ $app->get('0.0/test/', function () use ($app) {
     return $app['twig']->render('api.json', array('test' => $test));
 });
 
+//////
+// Expose Swagger.yaml to swagger-ui
+//////
+$app->get('api-docs/omni-api.yaml', function () use ($app) {
+    $file = file_get_contents('../config/swagger.yaml', FILE_USE_INCLUDE_PATH);
+    return $file;
+});
+
 // Apply ratelimiting
 // FileStorage is the type of token storage, see here:
 // http://bandwidth-throttle.github.io/token-bucket/api/namespace-bandwidthThrottle.tokenBucket.storage.html
