@@ -1,0 +1,23 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.define "omni-api" do |omni-api|
+    omni-api.vm.provider "docker" do |d|
+      d.name = "omni-api"
+      d.build_dir = "."
+      d.create_args = ["-p", "192.168.168.13:80:80","-p", "192.168.168.13:443:443"]
+      d.volumes = [
+        "/vagrant_src/omni-api:/var/www/omni-api/",
+        "/vagrant_build/app/sites-enabled:/etc/apache2/sites-enabled/"
+        ]
+      d.env = {
+        APACHE_RUN_USER: "www-data",
+        APACHE_RUN_GROUP: "www-data",
+        APACHE_LOG_DIR: "/var/log/apache2"
+      }
+      d.vagrant_vagrantfile = "../dockerhost/Vagrantfile"
+    end
+  end
+end

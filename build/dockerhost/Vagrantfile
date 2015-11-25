@@ -1,0 +1,53 @@
+ # -*- mode: ruby -*-
+  # vi: set ft=ruby :
+
+  VAGRANTFILE_API_VERSION = "2"
+
+  Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+    config.vm.box = "phusion/ubuntu-14.04-amd64"
+
+    config.vm.hostname = "dockerhost"
+
+    if Vagrant.has_plugin?("vagrant-vbguest") then
+      config.vbguest.auto_update = false
+    end
+
+    config.vm.network "forwarded_port", guest: 80, host: 80
+    config.vm.network "forwarded_port", guest: 443, host: 443
+    config.vm.network "private_network", ip: "192.168.169.13" #api1
+
+    config.ssh.forward_agent = true
+
+    config.vm.provider "virtualbox" do |vb|
+      # Don't boot with headless mode
+      # vb.gui = true
+      vb.memory = "1024"
+    end
+
+    config.vm.synced_folder "../../", "/vagrant_src", type: "nfs", :mount_options => ['nolock,vers=3,udp']
+    #config.vm.synced_folder "../../data", "/vagrant_data", type: "nfs", :mount_options => ['nolock,vers=3,udp']
+    #onfig.vm.synced_folder "../../data/db", "/vagrant_data_db", owner: "mysql", group: "mysql"
+    config.vm.synced_folder "../../build", "/vagrant_build", owner: "root", group: "root"
+
+    # config.vm.synced_folder "../../data/db", "/vagrant_data_db", type: "rsync",
+    #   rsync__exclude: [".git/", ".idea/"]
+    #
+    # # Configure the window for gatling to coalesce writes.
+    # if Vagrant.has_plugin?("vagrant-gatling-rsync")
+    #   config.gatling.latency = 2.5
+    #   config.gatling.time_format = "%H:%M:%S"
+    # end
+    #
+    # # Automatically sync when machines with rsync folders come up.
+    # config.gatling.rsync_on_startup = true
+
+    #config.nfs.map_uid = 1000
+    #config.nfs.map_gid = 1000
+
+    #config.vm.provision "shell", inline:
+    #  "apt-get -y update"
+    config.vm.provision "docker"
+    config.vm.provision "shell", inline:
+      "ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill"
+  end
