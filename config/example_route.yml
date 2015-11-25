@@ -1,0 +1,3 @@
+route1:
+    path:     /foo
+    defaults: { _controller: 'Gonzalo123\ApiController::initAction' }

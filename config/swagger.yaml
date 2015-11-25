@@ -1,0 +1,122 @@
+swagger: '2.0'
+info:
+  version: '1.0'
+  title: DialogTech OMNI RESTful API
+host: omniapi.dialogtech.com
+basePath: /1.0
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  key:
+    type: apiKey
+    in: header
+    name: key
+  value:
+    type: apiKey
+    in: header
+    name: value
+paths:
+  /status:
+    get:
+      description: Returns the status of the OMNI RESTful API
+      x-silex:
+        defaults:
+          _controller: 'Tom\ApiController::initAction'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Status'
+  /john:
+    get:
+      description: Returns the status of John
+      x-silex:
+        defaults:
+          _controller: 'John\ApiController::initAction'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Status'
+  /example:
+    get:
+      description: Returns the 20 most recent mentions for the authenticating user
+      security:
+        - key: []
+        - value: []
+      parameters:
+        - name: count
+          in: query
+          description: Specifies the number of tweets to try and retrieve
+          required: false
+          type: string
+        - name: since_id
+          in: query
+          description: Returns result with an ID greater than the specified ID
+          required: false
+          type: string
+        - name: max_id
+          in: query
+          description: Returns results with an ID less than or equal to the specified ID
+          required: false
+          type: string
+        - name: trim_user
+          in: query
+          description: 'When set to either true, t or 1, each tweet returned in a timeline will include a user object'
+          required: false
+          type: string
+        - name: contributor_details
+          in: query
+          description: This parameter enhances the contributors element of the status response
+          required: false
+          type: string
+        - name: include_entities
+          in: query
+          description: The entities node will be disincluded when set to false
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Example'
+definitions:
+  Status:
+    type: object
+    properties:
+      success:
+        type: string
+        description: Contains the value "OK"
+  Example:
+    type: object
+    properties:
+      offset:
+        type: integer
+        format: int32
+        description: Position in pagination.
+      limit:
+        type: integer
+        format: int32
+        description: Number of items to retrieve (100 max).
+      count:
+        type: integer
+        format: int32
+        description: Total number of items available.
+      description:
+        type: string
+        description: The long description of this result row
+      result:
+        type: object
+        items:
+          $ref: '#/definitions/Status'
