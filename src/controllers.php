@@ -46,9 +46,12 @@ $app->before(function (Request $request, Silex\Application $app) {
     if (!$bucket->consume(1, $seconds)) {
         $data = array(
             'message' => 'Too many requests, try again in ' . ceil($seconds) . ' seconds.',
-            'success' => false
+            'retry-after' => ceil($seconds)
         );
-        $response = new JsonResponse($data, 429);
+        $rendered = $app['twig']->render('api.json', array('data' => $data));
+        $rendered = preg_replace('/[\t]+/', '', preg_replace('/[\r\n]+/', '', $rendered));
+        $rendered = json_decode($rendered);
+        $response = new JsonResponse($rendered, 429);
         $response->headers->set('Retry-After', ceil($seconds));
         return $response;
     }
