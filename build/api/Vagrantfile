@@ -3,11 +3,11 @@
 
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.define "omni-api" do |omni-api|
-    omni-api.vm.provider "docker" do |d|
-      d.name = "omni-api"
+  config.vm.define "api1" do |api1|
+    api1.vm.provider "docker" do |d|
+      d.name = "api1"
       d.build_dir = "."
-      d.create_args = ["-p", "192.168.168.13:80:80","-p", "192.168.168.13:443:443"]
+      d.create_args = ["-p", "192.168.169.13:80:80","-p", "192.168.169.13:443:443"]
       d.volumes = [
         "/vagrant_src/omni-api:/var/www/omni-api/",
         "/vagrant_build/app/sites-enabled:/etc/apache2/sites-enabled/"
