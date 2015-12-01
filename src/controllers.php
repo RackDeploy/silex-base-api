@@ -57,6 +57,21 @@ $app->before(function (Request $request, Silex\Application $app) {
     }
 }, Silex\Application::EARLY_EVENT);
 
+$app->after(function (Request $request, Response $response, Silex\Application $app) {
+    // apply the current reponse code and status to the return envelope
+    $message = $response->getContent();
+    $message = preg_replace('/[\t]+/', '', preg_replace('/[\r\n]+/', '', $message));
+    $message = json_decode($message);
+    // make sure the response is a standard envelope
+    if (is_object($message) and property_exists($message, 'meta')) {
+        $code = $response->getStatusCode();
+        $message->meta->code = $code;
+        if (substr($code, 0, 1) === '2') {
+            $message->meta->success = true;
+        }
+        $response->setContent(json_encode($message));
+    }
+});
 
 $app->error(function (\Exception $e, $code) use ($app) {
     if ($app['debug']) {
