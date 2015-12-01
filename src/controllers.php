@@ -13,7 +13,7 @@ use Overrides\SwaggerYamlFileLoader;
 // Required for rate limiting
 use bandwidthThrottle\tokenBucket\Rate;
 use bandwidthThrottle\tokenBucket\TokenBucket;
-use bandwidthThrottle\tokenBucket\storage\FileStorage;
+use bandwidthThrottle\tokenBucket\storage\PHPRedisStorage;
 
 //Request::setTrustedProxies(array('127.0.0.1'));
 
@@ -46,9 +46,11 @@ $app->get('api-docs/omni-api.yaml', function () use ($app) {
 // TokenBucket is set with TokenBucket(total_tokens_allowed_in_the_bucket, rate, storage)
 // Bootstrap should be ran just once when deploying to pregen tokens, this needs to be moved out.
 $app->before(function (Request $request, Silex\Application $app) {
-    // TODO::change this to redis or Memcached
-    $storage = new FileStorage(__DIR__ . "/../var/api.bucket");
-    $rate    = new Rate(20, Rate::MINUTE);
+    $objRedis = new Redis();
+    $objRedis->connect('localhost', 6379);
+    $storage = new PHPRedisStorage('global', $objRedis);
+    //$storage = new FileStorage(__DIR__ . "/../var/api.bucket");
+    $rate    = new Rate(1, Rate::SECOND);
     $bucket  = new TokenBucket(10, $rate, $storage);
     // TODO::move this to deploy process
     $bucket->bootstrap(10);
