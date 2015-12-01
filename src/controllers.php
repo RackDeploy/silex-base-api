@@ -6,10 +6,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-// Overrides to process swagger yaml as routing config
-use Symfony\Component\Config\FileLocator;
-use Overrides\SwaggerYamlFileLoader;
-
 // Required for rate limiting
 use bandwidthThrottle\tokenBucket\Rate;
 use bandwidthThrottle\tokenBucket\TokenBucket;
@@ -58,14 +54,6 @@ $app->before(function (Request $request, Silex\Application $app) {
     }
 }, Silex\Application::EARLY_EVENT);
 
-// Build routes from swagger.yaml
-$app['routes'] = $app->share($app->extend('routes', function ($routes, $app) {
-    $loader = new SwaggerYamlFileLoader(new FileLocator(__DIR__.'/../config'));
-    $collection = $loader->load('swagger.yaml');
-    $routes->addCollection($collection);
-
-    return $routes;
-}));
 
 $app->error(function (\Exception $e, $code) use ($app) {
     if ($app['debug']) {
