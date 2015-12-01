@@ -1,3 +1,11 @@
-{% autoescape %}
-    {{ test|json_encode() }}
+{% autoescape false %}
+{
+  "data":
+    {% if data|length %}{{ data|json_encode()|default("") }}{% else %}{}{% endif %},
+  "meta": {
+    "code": 0,
+    "success": false
+  },
+  "pagination": {{ pagination|json_encode() }}
+}
 {% endautoescape %}
