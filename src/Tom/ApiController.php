@@ -14,6 +14,7 @@ class ApiController
      */
     public function initAction(Request $request, Application $app)
     {
-        return new JsonResponse(array(1, 1, $request->get('id')));
+        $data = array ("success" => true);
+        return $app['twig']->render('api.json', array('data' => $data));
     }
 }
