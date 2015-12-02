@@ -40,20 +40,23 @@ paths:
       description: Returns the status of the **OMNI RESTful API**
       x-silex:
         defaults:
-          _controller: 'Tom\ApiController::initAction'
+          _controller: 'classes\Tom\ApiController::initAction'
       responses:
         '200':
           description: Success
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Status'
-  /john:
+            type: object
+            properties:
+              success:
+                type: boolean
+  /users/john:
     get:
+      tags:
+        - users
       description: Returns the status of John
       x-silex:
         defaults:
-          _controller: 'John\ApiController::initAction'
+          _controller: 'classes\John\ApiController::initAction'
       responses:
         '200':
           description: Success
@@ -61,6 +64,19 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Status'
+    post:
+      tags:
+        - users
+      parameters:
+        - name: pet
+          in: body
+          description: Returns the post of John
+      x-silex:
+        defaults:
+          _controller: 'classes\John\ApiController::postAction'
+          schema:
+            $ref: '#/definitions/Pet'
+          required: true
   /example:
     get:
       tags:
@@ -136,3 +152,11 @@ definitions:
         type: object
         items:
           $ref: '#/definitions/Status'
+  Pet:
+    type: object
+    properties:
+      name:
+        type: string
+      birthday:
+        type: integer
+        format: int32
