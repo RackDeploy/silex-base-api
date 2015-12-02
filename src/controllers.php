@@ -28,8 +28,7 @@ $app->get('0.0/test/', function () use ($app) {
 // TokenBucket is set with TokenBucket(total_tokens_allowed_in_the_bucket, rate, storage)
 // Bootstrap should be ran just once when deploying to pregen tokens, this needs to be moved out.
 $app->before(function (Request $request, Silex\Application $app) {
-    //$app['ratelimit']->connect();
-    $app['ratelimit']->setUser('tom.cooper');
+    $app['ratelimit']->createUserBucket('tom.cooper');
     if (!$app['ratelimit']->consumeAll($seconds)) {
         $data = array(
             'message' => 'Too many requests, try again in ' . ceil($seconds) . ' seconds.',

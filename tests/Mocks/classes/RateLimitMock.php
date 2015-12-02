@@ -13,11 +13,7 @@ class RateLimitMock extends \PHPUnit_Framework_TestCase
         $this->mockedClass = $this->getMockBuilder('classes\RateLimit')
             ->disableOriginalConstructor()
             ->setMethods(array(
-                'connect',
-                'createBucket',
-                'initBucket',
-                'setUser',
-                'consumeOne',
+                'createUserBucket',
                 'consumeAll'
             ))
             ->getMock();
