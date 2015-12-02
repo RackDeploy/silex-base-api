@@ -1,4 +1,15 @@
 <?php
+/**
+ * RateLimiting based on the Token Algorithm (or LeakyBucket)
+ *
+ * Automatically configures a global bucket for rate limiting, then allows you to define additional buckets with
+ * setUser method.
+ *
+ * @package omni-api
+ * @author Thomas Cooper
+ * @version 1.0
+ * @copyright closed-source
+ */
 
 namespace classes;
 
@@ -20,7 +31,11 @@ class RateLimit
     const MAXBUCKETSIZE = 10;
     const CONSUMEPERREQUEST = 1;
 
-    public function __construct($app)
+    /**
+     * Pull in Redis provider, set global and user fillrate, then create the global token bucket.
+     * @param Application $app Silex Application
+     */
+    public function __construct(Application $app)
     {
         $this->redisObj = $app['redis'];
         $this->globalFillRate    = new Rate(100, Rate::SECOND);
@@ -28,39 +43,56 @@ class RateLimit
         $this->createBucket('global');
     }
 
-    public function connect()
+    /**
+     * This method creates a token bucket based on the provided Requires the global and user fillrate to be preset
+     * @param  string       $bucketName Either 'global' or the username used to create a token bucket
+     * @return TokenBucket              The initialized bucket
+     * @access private
+     */
+    private function createBucket($bucketName)
     {
-        //$this->redisObj = new \Redis;
-        //$this->redisObj->connect('localhost', 6379);
-
-    }
-
-    private function createBucket($type)
-    {
-        switch ($type) {
+        $bucket = null;
+        switch ($bucketName) {
             case 'global':
-                    $this->globalBucket = $this->initBucket($type, $this->globalFillRate);
+                    $bucket = $this->initializeBucket($bucketName, $this->globalFillRate);
+                    $this->globalBucket = $bucket;
                 break;
             default:
-                if (isset($type)) {
-                    $this->userBucket = $this->initBucket($type, $this->userFillRate);
+                if (isset($bucketName)) {
+                    $bucket = $this->initializeBucket($bucketName, $this->userFillRate);
+                    $this->userBucket = $bucket;
                 }
                 break;
         }
+        return $bucket;
     }
 
-    private function initBucket($type, $fillRate)
+    /**
+     * Initialize the a new token bucket, then proload that bucket with tokens
+     * @param  string       $bucketName The name of the bucket to create
+     * @param  Rate         $fillRate   Rate Object used to define fill rate
+     * @return TokenBucket              The initialized bucket
+     * @access private
+     */
+    private function initializeBucket($bucketName, Rate $fillRate)
     {
-        $storage = new PHPRedisStorage($type, $this->redisObj);
+        $storage = new PHPRedisStorage($bucketName, $this->redisObj);
         $bucket  = new TokenBucket(self::MAXBUCKETSIZE, $fillRate, $storage);
         $bucket->bootstrap(self::MAXBUCKETSIZE);
         return $bucket;
     }
 
-    public function setUser($user)
+
+    /**
+     * Create a new token bucket for the provided username, uses default fill rate
+     * @param  string       $username   Username to create a bucket for
+     * @return TokenBucket              The initialized bucket
+     * @access public
+     */
+    public function createUserBucket($username)
     {
-        $this->user = $user;
-        $this->createBucket($this->user);
+        $this->user = $username;
+        return $this->createBucket($this->user);
     }
 
     /**
