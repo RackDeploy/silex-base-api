@@ -14,8 +14,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 $app->get('/', function () use ($app) {
     return $app['twig']->render('index.html', array());
 })
-->bind('homepage')
-;
+->bind('homepage');
 
 $app->get('0.0/test/', function () use ($app) {
     $test = array('abcd' => '1234');
