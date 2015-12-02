@@ -6,11 +6,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-// Required for rate limiting
-use bandwidthThrottle\tokenBucket\Rate;
-use bandwidthThrottle\tokenBucket\TokenBucket;
-use bandwidthThrottle\tokenBucket\storage\PHPRedisStorage;
-
 //Request::setTrustedProxies(array('127.0.0.1'));
 
 //////
@@ -34,16 +29,9 @@ $app->get('0.0/test/', function () use ($app) {
 // TokenBucket is set with TokenBucket(total_tokens_allowed_in_the_bucket, rate, storage)
 // Bootstrap should be ran just once when deploying to pregen tokens, this needs to be moved out.
 $app->before(function (Request $request, Silex\Application $app) {
-    $objRedis = new Redis();
-    $objRedis->connect('localhost', 6379);
-    $storage = new PHPRedisStorage('global', $objRedis);
-    //$storage = new FileStorage(__DIR__ . "/../var/api.bucket");
-    $rate    = new Rate(1, Rate::SECOND);
-    $bucket  = new TokenBucket(10, $rate, $storage);
-    // TODO::move this to deploy process
-    $bucket->bootstrap(10);
-
-    if (!$bucket->consume(1, $seconds)) {
+    //$app['ratelimit']->connect();
+    $app['ratelimit']->setUser('tom.cooper');
+    if (!$app['ratelimit']->consumeAll($seconds)) {
         $data = array(
             'message' => 'Too many requests, try again in ' . ceil($seconds) . ' seconds.',
             'retry-after' => ceil($seconds)
