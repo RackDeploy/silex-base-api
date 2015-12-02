@@ -1,6 +1,6 @@
 <?php
 
-namespace John;
+namespace classes\Tom;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +14,7 @@ class ApiController
      */
     public function initAction(Request $request, Application $app)
     {
-        $data = array("gay" => true, "likes_men" => true, "dumb_dog" => true, "pink_slip" => "priceless");
-        return new JsonResponse($data);
+        $data = array ("success" => true);
+        return $app['twig']->render('api.json', array('data' => $data));
     }
 }
