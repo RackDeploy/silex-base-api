@@ -14,6 +14,9 @@ $app->register(new ServiceControllerServiceProvider());
 $app->register(new TwigServiceProvider());
 $app->register(new HttpFragmentServiceProvider());
 $app['twig'] = $app->share($app->extend('twig', function ($twig, $app) {
+    // Pre-Set Pagination object
+    $pagination = (object) array ();
+    $twig->addGlobal('pagination', $pagination);
     return $twig;
 }));
 
