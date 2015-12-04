@@ -16,11 +16,6 @@ $app->get('/', function () use ($app) {
 })
 ->bind('homepage');
 
-$app->get('0.0/test/', function () use ($app) {
-    $test = array('abcd' => '1234');
-    return $app['twig']->render('api.json', array('test' => $test));
-});
-
 // Apply ratelimiting
 // FileStorage is the type of token storage, see here:
 // http://bandwidth-throttle.github.io/token-bucket/api/namespace-bandwidthThrottle.tokenBucket.storage.html
