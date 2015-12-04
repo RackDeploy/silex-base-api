@@ -2,3 +2,4 @@
 .vagrant/
 var/
 .DS_Store
+/coverage/
