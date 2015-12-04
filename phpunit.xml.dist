@@ -11,12 +11,19 @@
     processIsolation            = "false"
     stopOnFailure               = "false"
     syntaxCheck                 = "false"
-    bootstrap                   = "vendor/autoload.php">
+    bootstrap                   = "src/app.php">
 
     <testsuites>
         <testsuite name="Test Suite">
             <directory>./tests/Tests/</directory>
         </testsuite>
     </testsuites>
-
+    <filter>
+	<whitelist processUncoveredFilesFromWhitelist="true">
+	    <directory suffix=".php">./src</directory>
+        <exclude>
+            <file>./src/console.php</file>
+        </exclude>
+	</whitelist>
+    </filter>
 </phpunit>

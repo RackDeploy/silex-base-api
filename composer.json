@@ -23,7 +23,8 @@
         "symfony/validator": "~2.3",
         "symfony/yaml": "~2.3",
         "bandwidth-throttle/token-bucket": "0.4.*",
-        "phpunit/phpunit": "~5.0"
+        "phpunit/phpunit": "~5.0",
+        "phpunit/php-code-coverage": "~3.0"
     },
     "require-dev": {
         "symfony/var-dumper" : "dev-master"
