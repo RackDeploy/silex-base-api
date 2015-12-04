@@ -18,11 +18,12 @@ class RateLimitMock extends \PHPUnit_Framework_TestCase
             ))
             ->getMock();
     }
-    public function getBase()
+    public function setRateLimited($limited)
     {
+        $returnValue = ($limited) ? false : true;
         $this->mockedClass->expects($this->once())
             ->method('consumeAll')
-            ->will($this->returnValue(true));
+            ->will($this->returnValue($returnValue));
         return $this->mockedClass;
     }
 }

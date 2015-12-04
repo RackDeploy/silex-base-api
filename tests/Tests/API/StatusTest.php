@@ -3,10 +3,11 @@
 namespace Tests\API;
 
 use App\SetupApp;
+use Mocks\classes\RateLimitMock;
 
 class StatusTest extends SetupApp
 {
-    public function testInitialPage()
+    public function testStatus()
     {
         $response = '{"success":true}';
         $fullResponse = $this->successfulResponse($response, 200);

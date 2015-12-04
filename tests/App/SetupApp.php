@@ -7,16 +7,21 @@ use Mocks\classes\RateLimitMock;
 
 class SetupApp extends WebTestCase
 {
+    protected $app;
+
     public function createApplication()
     {
-        $rateMock = new RateLimitMock();
-
         // app.php must return an Application instance
         require __DIR__.'/../../src/app.php';
+
         $app['debug'] = true;
         unset($app['exception_handler']);
 
-        $app['ratelimit'] = $rateMock->getBase();
+        $this->app = $app;
+
+        $rateMock = new RateLimitMock();
+        $this->mockProvider('ratelimit', $rateMock->setRateLimited(false));
+
         require __DIR__.'/../../config/prod.php';
         require __DIR__.'/../../src/routes.php';
         require __DIR__.'/../../src/controllers.php';
@@ -24,13 +29,18 @@ class SetupApp extends WebTestCase
         return $app;
     }
 
-    public function successfulResponse($data, $code)
+    public function mockProvider($name, $mock)
     {
-        return '{"data":' . $data . ',"meta":{"code":' . $code . ',"success":true},"pagination":{}}';
+        $this->app[$name] = $mock;
     }
 
-    public function failedResponse($data, $code)
+    public function successfulResponse($data, $code, $pagination = '{}')
     {
-        return '{"data":' . $data . ',"meta":{"code":' . $code . ',"success":false},"pagination":{}}';
+        return '{"data":' . $data . ',"meta":{"code":' . $code . ',"success":true},"pagination":' . $pagination . '}';
+    }
+
+    public function failedResponse($data, $code, $pagination = '{}')
+    {
+        return '{"data":' . $data . ',"meta":{"code":' . $code . ',"success":false},"pagination":' . $pagination . '}';
     }
 }
