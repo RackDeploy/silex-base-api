@@ -7,12 +7,12 @@ use Silex\ServiceProviderInterface;
 
 class PHPRedisServiceProvider implements ServiceProviderInterface
 {
-    
+
     public function register(Application $app)
     {
         $app['redis'] = $app->share(function () use ($app) {
-            $thisRedis = new \Redis();
-            $host = isset($app['redis.host']) ? $app['redis.host'] : array();
+            $thisRedis = isset($app['redis.engine']) ? $app['redis.engine'] : new \Redis();
+            $host = isset($app['redis.host']) ? $app['redis.host'] : '127.0.0.1';
             $port = isset($app['redis.port']) && is_int($app['redis.port']) ? $app['redis.port'] : 6379;
             $timeout = isset($app['redis.timeout']) && is_int($app['redis.timeout']) ? $app['redis.timeout'] : 0;
             $persistent = isset($app['redis.persistent']) ? $app['redis.persistent'] : false;
