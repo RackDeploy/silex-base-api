@@ -6,8 +6,8 @@ use Silex\Provider\UrlGeneratorServiceProvider;
 use Silex\Provider\ValidatorServiceProvider;
 use Silex\Provider\ServiceControllerServiceProvider;
 use Silex\Provider\HttpFragmentServiceProvider;
-use provider\RateLimitServiceProvider;
 use provider\PHPRedisServiceProvider;
+use provider\RateLimitServiceProvider;
 
 $app = new Application();
 $app->register(new UrlGeneratorServiceProvider());
@@ -21,7 +21,6 @@ $app['twig'] = $app->share($app->extend('twig', function ($twig, $app) {
     $twig->addGlobal('pagination', $pagination);
     return $twig;
 }));
-$app->register(new RateLimitServiceProvider());
 $app->register(new PHPRedisServiceProvider(), array(
     'redis.host' => '127.0.0.1',
     'redis.port' => 6379,
@@ -32,5 +31,5 @@ $app->register(new PHPRedisServiceProvider(), array(
     'redis.prefix' => 'myprefix',
     'redis.database' => '0'
 ));
-
+$app->register(new RateLimitServiceProvider());
 return $app;
