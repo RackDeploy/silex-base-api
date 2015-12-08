@@ -1,4 +1,4 @@
-The DialogTech omni-api project!
+The silex-base-api project!
 ================================
 This is an API framework built on Silex a micro-framework designed by the creators of Sympony2 inspired by Ruby Sinatra.
  
